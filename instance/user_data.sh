@@ -23,11 +23,21 @@ EOF
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 apt-get update && apt-get install -y --no-install-recommends \
 	build-essential \
-	zsh bat bmon htop httpie git tmux fzf grc tree ripgrep \
+	docker.io docker-compose \
+	zsh bat bmon htop httpie git gpg tmux fzf grc tree ripgrep \
 	linux-headers-$(uname -r) \
 	nvidia-smi nvidia-driver nvidia-cuda-dev nvidia-cuda-toolkit
 
 chsh -s /usr/bin/zsh $user
+usermod --append --groups=docker $user
+
+# docker+gpu related tools
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg &&
+	curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |
+	sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |
+		tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+apt-get update
+apt-get install -y nvidia-container-toolkit
 
 echo -e "\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICz3u/Z5kCBcSPSZdyNoDBEqDWwmTnBWPeFQ93jgRijX dtrifiro-redhat" >>$HOME/.ssh/authorized_keys
 
