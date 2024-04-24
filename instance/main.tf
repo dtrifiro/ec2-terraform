@@ -1,37 +1,37 @@
 provider "aws" {
-  region = local.region
+  region = var.region
 }
 
 data "aws_availability_zones" "available" {}
 
 locals {
-  name   = "dtrifiro-gpu"
-  region = "eu-west-1"
-
   vpc_cidr = "10.0.0.0/16"
   # azs      = slice(data.aws_availability_zones.available.names, 0, 3)
   azs = slice(data.aws_availability_zones.available.names, 0, 1)
 
-  ssh_key_name  = "dtrifiro@redhat.com"
-  ssh_key_value = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBqKUU5xbvbd3SpX9tttv2oWZb0/njKxmNRMAI5DpSIf dtrifiro@redhat.com"
-  user_data     = file("user_data.sh")
-
-  attached_ebs_volume = "vol-0c7e20d989aabd157" # created via the volume module
+  user_data = file("user_data.sh")
 
   tags = {
     Terraform = "true"
-    Name      = local.name
+    Name      = var.name
   }
+}
+
+module "volume_attachment" {
+  source = "../volume"
+
+  region = var.region
+  name   = "${var.name}-volume"
 }
 
 module "ec2_instance" {
   source = "terraform-aws-modules/ec2-instance/aws"
 
-  name = local.name
+  name = var.name
 
   ami                    = data.aws_ami.debian.id
-  instance_type          = "g4dn.xlarge"
-  key_name               = local.ssh_key_name
+  instance_type          = var.instance_type
+  key_name               = var.ssh_key_name
   monitoring             = true
   vpc_security_group_ids = [module.security_group.security_group_id]
   # subnet_id                   = element(module.vpc.private_subnets, 0)
@@ -49,10 +49,10 @@ module "ec2_instance" {
     {
       encrypted   = true
       volume_type = "gp3"
-      throughput  = 200
+      throughput  = 500
       volume_size = 250
       tags = {
-        Name = "dtrifiro-gpu-root"
+        Name = "${var.name}-root"
       }
     },
   ]
@@ -82,8 +82,8 @@ module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
 
-  name        = local.name
-  description = "dtrifiro-gpu security group"
+  name        = var.name
+  description = "${var.name} security group"
   vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
@@ -101,7 +101,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
 
-  name = local.name
+  name = var.name
   cidr = local.vpc_cidr
 
   azs             = local.azs
@@ -132,15 +132,15 @@ resource "aws_network_interface" "this" {
 }
 
 resource "aws_key_pair" "ssh-key" {
-  key_name   = local.ssh_key_name
-  public_key = local.ssh_key_value
+  key_name   = var.ssh_key_name
+  public_key = var.ssh_key_value
 
   tags = local.tags
 }
 
 resource "aws_volume_attachment" "this" {
   device_name = "/dev/sdh" # FIXME: this device name is ignored
-  volume_id   = local.attached_ebs_volume
+  volume_id   = module.volume_attachment.volume_id
   instance_id = module.ec2_instance.id
 }
 

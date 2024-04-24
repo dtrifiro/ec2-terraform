@@ -2,18 +2,34 @@
 
 ## Howto
 
-```bash
-cd volume
-terraform init
-terraform plan
-terraform apply
+### Volume Module
 
+```bash
 cd ../instance
-vim main.tf # edit as needed
 terraform init
+
 terraform plan
 terraform apply
 ```
+
+To customize the deployment, create a `.tfvars` file:
+
+```bash
+cat > vars.tfvars <<EOF
+region='us-east-1'
+instance_name="dtrifiro-gpu"
+
+EOF
+```
+
+Then run `plan`, `apply`:
+
+```bash
+terraform plan -var-file=vars.tfvars
+terraform apply -var-file=vars.tfvars
+```
+
+See [instance/variables.tf](/instance/variables.tf) for a list of allowed values
 
 ## Resources
 
