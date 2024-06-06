@@ -21,7 +21,7 @@ locals {
 }
 
 module "volume_attachment" {
-  source = "../volume"
+  source = "./volume"
 
   region = var.region
   name   = "${var.name}-volume"

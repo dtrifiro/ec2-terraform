@@ -5,7 +5,6 @@
 ### Volume Module
 
 ```bash
-cd ../instance
 terraform init
 
 terraform plan
