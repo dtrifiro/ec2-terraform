@@ -19,7 +19,7 @@ output "instance_type" {
 }
 
 output "ami" {
-  value       = data.aws_ami.debian.name
+  value       = data.aws_ami.ami.name
   description = "Name of the ami used for the instasnce"
 }
 

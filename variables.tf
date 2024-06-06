@@ -45,3 +45,10 @@ variable "persistent_volume_id" {
 
   description = "Attach the specified persistent volume. Created if null."
 }
+
+variable "custom_ami" {
+  type    = string
+  default = null
+
+  description = "Use the specified ami.`user_data.sh` is not run in this case."
+}

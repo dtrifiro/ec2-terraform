@@ -9,8 +9,6 @@ locals {
   # azs      = slice(data.aws_availability_zones.available.names, 0, 3)
   azs = slice(data.aws_availability_zones.available.names, 0, 1)
 
-  user_data = file("user_data.sh")
-
   create_volume = (var.persistent_volume_id == null)
   volume_id     = (local.create_volume ? module.volume_attachment[0].volume_id : var.persistent_volume_id)
 
@@ -34,7 +32,7 @@ module "ec2_instance" {
 
   name = var.name
 
-  ami                    = data.aws_ami.debian.id
+  ami                    = data.aws_ami.ami.id
   instance_type          = var.instance_type
   key_name               = var.ssh_key_name
   monitoring             = true
@@ -45,7 +43,7 @@ module "ec2_instance" {
 
   # hibernation = true # not supported in all cases, see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hibernating-prerequisites.html
 
-  user_data = local.user_data
+  user_data = var.custom_ami == null ? file("user_data.sh") : null
 
   tags = local.tags
 
@@ -119,14 +117,15 @@ module "vpc" {
 }
 
 
-data "aws_ami" "debian" {
+data "aws_ami" "ami" {
   most_recent = true
-  owners      = ["amazon"]
+  # owners      = ["amazon"]
 
   filter {
-    name   = "name"
-    values = ["debian-12-amd64-*"] # change here to use a different AMI
-    # values = ["amazon/RHEL-9*x86_64*"]
+    name = "name"
+    values = [
+      var.custom_ami == null ? "debian-12-amd64-*" : var.custom_ami
+    ]
   }
 }
 
