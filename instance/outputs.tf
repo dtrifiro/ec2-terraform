@@ -34,6 +34,6 @@ output "instance_id" {
 }
 
 output "persistent_volume_id" {
-  value       = module.volume_attachment.volume_id
-  description = "persistent attached volume id"
+  value       = local.volume_id
+  description = "Attached persistent volume id"
 }

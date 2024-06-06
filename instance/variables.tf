@@ -37,3 +37,11 @@ variable "ssh_key_value" {
   type    = string
   default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBqKUU5xbvbd3SpX9tttv2oWZb0/njKxmNRMAI5DpSIf dtrifiro@redhat.com"
 }
+
+
+variable "persistent_volume_id" {
+  type    = string
+  default = null
+
+  description = "Attach the specified persistent volume. Created if null."
+}

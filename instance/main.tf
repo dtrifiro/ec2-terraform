@@ -11,6 +11,9 @@ locals {
 
   user_data = file("user_data.sh")
 
+  create_volume = (var.persistent_volume_id == null)
+  volume_id     = (local.create_volume ? module.volume_attachment[0].volume_id : var.persistent_volume_id)
+
   tags = {
     Terraform = "true"
     Name      = var.name
@@ -22,6 +25,8 @@ module "volume_attachment" {
 
   region = var.region
   name   = "${var.name}-volume"
+
+  count = local.create_volume ? 1 : 0
 }
 
 module "ec2_instance" {
@@ -140,8 +145,9 @@ resource "aws_key_pair" "ssh-key" {
 
 resource "aws_volume_attachment" "this" {
   device_name = "/dev/sdh" # FIXME: this device name is ignored
-  volume_id   = module.volume_attachment.volume_id
   instance_id = module.ec2_instance.id
+
+  volume_id = local.create_volume ? module.volume_attachment[0].volume_id : var.persistent_volume_id
 }
 
 
