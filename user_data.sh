@@ -2,9 +2,10 @@
 set -x
 
 HOSTNAME="dtrifiro-gpu"
+public_key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBqKUU5xbvbd3SpX9tttv2oWZb0/njKxmNRMAI5DpSIf dtrifiro@redhat.com"
 echo "Starting user data setup"
 
-echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICz3u/Z5kCBcSPSZdyNoDBEqDWwmTnBWPeFQ93jgRijX dtrifiro-red" >/root/.ssh/authorized_keys
+echo "$public_key" >/root/.ssh/authorized_keys
 
 hostname $HOSTNAME
 echo "127.0.0.1 $HOSTNAME" >>/etc/hosts
@@ -84,7 +85,9 @@ if ! grep CUDA_HOME $HOME/.zshrc >/dev/null; then
 EOF
 fi
 
-echo -e "\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICz3u/Z5kCBcSPSZdyNoDBEqDWwmTnBWPeFQ93jgRijX dtrifiro-red" >>$HOME/.ssh/authorized_keys
+if ! grep "$public_key" $HOME/.ssh/authorized_keys &>/dev/null; then
+	echo $public_key >>$HOME/.ssh/authorized_keys
+fi
 
 # misc development tools
 sudo apt install -y python-is-python3 python3-pip python3-virtualenv
