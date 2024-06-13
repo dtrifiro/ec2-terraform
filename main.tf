@@ -154,7 +154,7 @@ resource "null_resource" "wait-finished" {
   provisioner "remote-exec" {
     connection {
       host = module.ec2_instance.public_ip
-      user = "admin"
+      user = "root"
 
       ## use ssh agent to load the ssh key
       agent = true
@@ -162,7 +162,7 @@ resource "null_resource" "wait-finished" {
       # private_key = file("~/.ssh/id_ed25519")
     }
 
-    inline = ["until [ -f /var/lib/cloud/instance/boot-finished ]; do echo \"Waiting for provisioning...\" && sleep 1; done"]
+    script = "wait_for_provisioning.sh"
   }
 
   ## local-exec could be used too
