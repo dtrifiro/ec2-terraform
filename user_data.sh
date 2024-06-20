@@ -18,7 +18,8 @@ function as_user() {
 }
 
 # block devices
-mkdir /mnt/scratch && mkfs.ext4 /dev/nvme1n1 && mount /dev/nvme1n1 /mnt/scratch && chown $user /mnt/scratch
+scratch_dev=/dev/nvme1n1
+mkdir /mnt/scratch && mkfs.ext4 "$scratch_dev" && mount "$scratch_dev" /mnt/scratch && chown $user /mnt/scratch
 ebs_volume_dev=/dev/nvme2n1
 (
 	mkdir /mnt/data $HOME &&
@@ -50,7 +51,7 @@ systemctl enable --now systemd-oomd
 # nvidia repos and drivers
 curl -fSsL https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/3bf863cc.pub | gpg --dearmor | tee /usr/share/keyrings/nvidia-drivers.gpg >/dev/null 2>&1
 echo 'deb [signed-by=/usr/share/keyrings/nvidia-drivers.gpg] https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/ /' | tee /etc/apt/sources.list.d/nvidia-drivers.list
-apt-get update && apt-get install -y --no-install-recommends nvidia-driver cuda-toolkit-12
+apt-get update && apt-get install -y --no-install-recommends nvidia-smi nvidia-driver cuda-toolkit-12
 
 # docker+gpu related tools
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg &&
@@ -72,21 +73,22 @@ as_user ln -s $HOME/.dotfiles/extras/zprofile $HOME/.zprofile
 
 if ! grep DOTFILES $HOME/.zshrc >/dev/null; then
 	cat >>$HOME/.zshrc <<EOF
-    export DOTFILES=\$HOME/.dotfiles
-    source \$DOTFILES/brethil_dotfile.sh
-    # dotfiles end
+export DOTFILES=\$HOME/.dotfiles
+source \$DOTFILES/brethil_dotfile.sh
+# dotfiles end
 EOF
 fi
 
 if ! grep CUDA_HOME $HOME/.zshrc >/dev/null; then
 	cat >>$HOME/.zshrc <<EOF
-    export CUDA_HOME=/usr/local/cuda
-    export PATH=\$CUDA_HOME/bin:]$PATH
+export CUDA_HOME=/usr/local/cuda
+export PATH=\$CUDA_HOME/bin:]$PATH
 EOF
 fi
 
 if ! grep "$public_key" $HOME/.ssh/authorized_keys &>/dev/null; then
-	echo $public_key >>$HOME/.ssh/authorized_keys
+	(mkdir $HOME/.ssh && chmod 0700 $HOME/.ssh) || true
+	echo "$public_key" >>$HOME/.ssh/authorized_keys
 fi
 
 # misc development tools
