@@ -77,18 +77,26 @@ export DOTFILES=\$HOME/.dotfiles
 source \$DOTFILES/brethil_dotfile.sh
 # dotfiles end
 EOF
+	chown $user:$user $HOME/.zshrc
 fi
 
 if ! grep CUDA_HOME $HOME/.zshrc >/dev/null; then
 	cat >>$HOME/.zshrc <<EOF
 export CUDA_HOME=/usr/local/cuda
-export PATH=\$CUDA_HOME/bin:]$PATH
+export PATH=\$CUDA_HOME/bin:$PATH
+EOF
+fi
+
+if ! grep DOCKER_BUILDKIT $HOME/.zshrc >/dev/null; then
+	cat >>$HOME/.zshrc <<EOF
+export DOCKER_BUILDKIT=1
 EOF
 fi
 
 if ! grep "$public_key" $HOME/.ssh/authorized_keys &>/dev/null; then
 	(mkdir $HOME/.ssh && chmod 0700 $HOME/.ssh) || true
 	echo "$public_key" >>$HOME/.ssh/authorized_keys
+	chown $user:$user $HOME/.ssh/authorized_keys
 fi
 
 # misc development tools
