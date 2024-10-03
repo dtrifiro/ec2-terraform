@@ -98,6 +98,3 @@ if ! grep "$public_key" $HOME/.ssh/authorized_keys &>/dev/null; then
 	echo "$public_key" >>$HOME/.ssh/authorized_keys
 	chown $user:$user $HOME/.ssh/authorized_keys
 fi
-
-# misc development tools
-sudo apt install -y python-is-python3 python3-pip python3-virtualenv
