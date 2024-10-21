@@ -44,7 +44,7 @@ apt-get update && apt-get install -y --no-install-recommends \
 	docker.io docker-compose \
 	zsh bat bmon htop httpie git gpg tmux fzf grc tree ripgrep \
 	python-is-python3 python3-dev python3-pip python3-virtualenv \
-	dkms linux-headers-$(uname -r)
+	dkms "linux-headers-$(uname -r)"
 
 systemctl enable --now systemd-oomd
 
