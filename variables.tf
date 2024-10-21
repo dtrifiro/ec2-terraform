@@ -20,8 +20,18 @@ variable "instance_type" {
   # "g5.48xlarge" # 192 cores, 768GB, 8x24GB gpus (??)
   # see the docs:
   # G5: https://aws.amazon.com/ec2/instance-types/g5/
+  # G6: https://aws.amazon.com/ec2/instance-types/g6
   # P2: https://aws.amazon.com/ec2/instance-types/p2/
   # P4: https://aws.amazon.com/ec2/instance-types/g5/
+  #
+  # g6.xlarge 4 x86_64 16 250 ssd Up to 10 Gigabit 1
+  # g6.2xlarge 8 x86_64 32 450 ssd Up to 10 Gigabit 1
+  # g6.4xlarge 16 x86_64 64 600 ssd Up to 25 Gigabit 1
+  # g6.8xlarge 32 x86_64 128 900 ssd 25 Gigabit 1
+  # g6.12xlarge 48 x86_64 192 3760 ssd 40 Gigabit 4
+  # g6.16xlarge 64 x86_64 256 1880 ssd 25 Gigabit 1
+  # g6.24xlarge 96 x86_64 384 3760 ssd 50 Gigabit 4
+  # g6.48xlarge 192 x86_64 768 7520 ssd 100 Gigabit 8
 
   type    = string
   default = "g5.8xlarge"
