@@ -96,5 +96,5 @@ fi
 if ! grep "$public_key" $HOME/.ssh/authorized_keys &>/dev/null; then
 	(mkdir $HOME/.ssh && chmod 0700 $HOME/.ssh) || true
 	echo "$public_key" >>$HOME/.ssh/authorized_keys
-	chown $user:$user $HOME/.ssh/authorized_keys
+	chown -R $user:$user $HOME/.ssh
 fi
