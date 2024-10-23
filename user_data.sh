@@ -51,7 +51,7 @@ systemctl enable --now systemd-oomd
 # nvidia repos and drivers
 curl -fSsL https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/3bf863cc.pub | gpg --dearmor | tee /usr/share/keyrings/nvidia-drivers.gpg >/dev/null 2>&1
 echo 'deb [signed-by=/usr/share/keyrings/nvidia-drivers.gpg] https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/ /' | tee /etc/apt/sources.list.d/nvidia-drivers.list
-apt-get update && apt-get install -y --no-install-recommends nvidia-smi nvidia-driver cuda-toolkit-12
+apt-get update && apt-get install -y --no-install-recommends nvidia-smi nvidia-driver cuda-toolkit-12 cuda-runtime-12-6
 
 # docker+gpu related tools
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg &&
